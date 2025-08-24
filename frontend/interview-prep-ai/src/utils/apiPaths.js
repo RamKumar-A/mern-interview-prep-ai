@@ -1,11 +1,15 @@
-// export const BASE_URL = 'http://localhost:8000';
-export const BASE_URL = 'https://mern-interview-prep-ai-api.onrender.com';
+export const BASE_URL = 'http://localhost:8000';
+// export const BASE_URL = 'https://mern-interview-prep-ai-api.onrender.com';
 
 export const API_PATHS = {
   AUTH: {
     REGISTER: '/api/auth/register', //Signup
     LOGIN: '/api/auth/login', //Authenticate user and return JWT token
-    GET_PROFILE: '/api/auth/profile', //Get logged-in user details
+  },
+  USER: {
+    GET_PROFILE: '/api/user/getMe', //Get logged-in user details
+    UPDATE_ME: '/api/user/updateMe',
+    UPDATE_MY_PASSWORD: '/api/user/updateMyPassword',
   },
   IMAGE: {
     UPLOAD_IMAGE: '/api/auth/upload-image', //Upload profile picture

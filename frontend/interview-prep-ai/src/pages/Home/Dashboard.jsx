@@ -1,16 +1,16 @@
-import { CARD_BG } from '../../utils/data';
-import toast from 'react-hot-toast';
-import DashboardLayout from '../../components/layouts/DashboardLayout';
-import { useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import { LuPlus } from 'react-icons/lu';
-import axiosInstance from '../../utils/axiosInstance';
-import { API_PATHS } from '../../utils/apiPaths';
-import SummaryCard from '../../components/Cards/SummaryCard';
 import moment from 'moment';
+import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
+import { LuPlus } from 'react-icons/lu';
+import { useNavigate } from 'react-router-dom';
+import SummaryCard from '../../components/Cards/SummaryCard';
+import DashboardLayout from '../../components/layouts/DashboardLayout';
 import Modal from '../../components/Modal';
+import Window from '../../components/Window';
+import { API_PATHS } from '../../utils/apiPaths';
+import axiosInstance from '../../utils/axiosInstance';
+import { CARD_BG } from '../../utils/data';
 import CreateSessionForm from './CreateSessionForm';
-import DeleteAlertContent from '../../components/DeleteAlertContent';
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -23,6 +23,8 @@ function Dashboard() {
     data: null,
   });
 
+  const [isDeleting, setIsDeleting] = useState(false);
+
   async function fetchAllSessions() {
     try {
       const response = await axiosInstance.get(API_PATHS.SESSION.GET_ALL);
@@ -33,6 +35,7 @@ function Dashboard() {
   }
   async function deleteSession(sessionData) {
     try {
+      setIsDeleting(true);
       await axiosInstance.delete(API_PATHS.SESSION.DELETE(sessionData?._id));
 
       toast.success('Session Deleted Successfully');
@@ -43,6 +46,8 @@ function Dashboard() {
       fetchAllSessions();
     } catch (err) {
       console.error('Error deleting session data', err);
+    } finally {
+      setIsDeleting(false);
     }
   }
 
@@ -92,19 +97,41 @@ function Dashboard() {
           <CreateSessionForm />
         </div>
       </Modal>
-      <Modal
-        isOpen={openDeleteAlert?.open}
-        onClose={() => setOpenDeleteAlert({ open: false, data: null })}
-        title="Delete Alert"
-      >
-        <div className="w-[80vw] md:w-[50vw] lg:w-[40vw]">
-          <DeleteAlertContent
-            content="Are you sure want to delete this session detail?"
-            onDelete={() => deleteSession(openDeleteAlert.data)}
-          />
-        </div>
-      </Modal>
+
+      <Window title="Delete Alert" id="delete">
+        <DeleteDialog
+          deleteSession={() => deleteSession(openDeleteAlert.data)}
+          isDeleting={isDeleting}
+        />
+      </Window>
     </DashboardLayout>
+  );
+}
+
+function DeleteDialog({ isDeleting, deleteSession, onCloseDialog }) {
+  return (
+    <div className="space-y-4">
+      <p className="">Are you sure want to delete this session detail?</p>
+      <div className="flex items-center justify-end gap-3">
+        <button
+          className="py-1.5 px-3 rounded-md text-sm cursor-pointer bg-orange-100 text-orange-700 border border-orange-200"
+          onClick={() => onCloseDialog()}
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          className="py-1.5 px-3 rounded-md text-sm cursor-pointer bg-red-300 text-red-600 border border-red-400 inline-block"
+          onClick={() => {
+            deleteSession();
+            onCloseDialog();
+          }}
+          disabled={isDeleting}
+        >
+          {isDeleting ? 'Deleting' : 'Delete'}
+        </button>
+      </div>
+    </div>
   );
 }
 

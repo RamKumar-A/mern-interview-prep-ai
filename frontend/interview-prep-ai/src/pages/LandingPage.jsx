@@ -1,17 +1,20 @@
 import { useContext, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { LuSparkles } from 'react-icons/lu';
+import { useNavigate } from 'react-router-dom';
+import ProfileInfoCard from '../components/Cards/ProfileInfoCard';
+import Modal from '../components/Modal';
+import { UserContext } from '../context/UserContext';
+import { useWindowSize } from '../hooks/useWindowSize';
 import { APP_FEATURES } from '../utils/data';
 import Login from './Auth/Login';
 import Signup from './Auth/Signup';
-import Modal from '../components/Modal';
-import { UserContext } from '../context/UserContext';
-import ProfileInfoCard from '../components/Cards/ProfileInfoCard';
 function LandingPage() {
   const { user } = useContext(UserContext);
   const navigate = useNavigate();
   const [openAuthModal, setOpenAuthModal] = useState(false);
   const [currentPage, setCurrentPage] = useState('login');
+  const size = useWindowSize();
+
   function handleCTA() {
     if (!user) {
       setOpenAuthModal(true);
@@ -19,21 +22,22 @@ function LandingPage() {
       navigate('/dashboard');
     }
   }
+
   return (
     <>
       <div className="w-full min-h-full bg-[#FFFCEF]">
         <div className="md:w-[500px] md:h-[500px] bg-amber-200/20 blur-[65px] absolute top-0 left-0"></div>
-        <div className="container mx-auto px-4 pt-6 pb-[200px] relative z-10 xl:max-w-[80rem] ">
+        <div className="container mx-auto px-4 pt-6 pb-[200px] relative z-10 xl:max-w-[80rem]">
           {/* Header */}
           <header className="flex justify-between items-center mb-16">
-            <div className="text-xl text-black font-bold">
+            <div className="text-lg sm:text-xl text-black font-bold">
               Interview Perp AI
             </div>
             {user ? (
               <ProfileInfoCard />
             ) : (
               <button
-                className="bg-linear-to-r from-[#FF9324] to-[#E99A4B] text-sm font-semibold text-white px-4 py-2 md:px-7 md:py-2.5 rounded-full hover:bg-black hover:text-white border border-white transition-colors cursor-pointer"
+                className="bg-linear-to-r from-[#FF9324] to-[#E99A4B] text-sm font-semibold text-white px-3 py-1.5 md:px-7 md:py-2.5 rounded-full hover:bg-black hover:text-white border border-white transition-colors cursor-pointer"
                 onClick={() => setOpenAuthModal(true)}
               >
                 Login / Sign up
@@ -79,7 +83,7 @@ function LandingPage() {
         <div>
           <section className="flex items-center justify-center -mt-36 ">
             <img
-              src="/bgImage.png"
+              src={size <= 600 ? '/mobileBgImage.jpg' : '/bgImage.png'}
               alt="bg image"
               className="w-[80vw] border border-amber-200 object-cover rounded-lg"
             />

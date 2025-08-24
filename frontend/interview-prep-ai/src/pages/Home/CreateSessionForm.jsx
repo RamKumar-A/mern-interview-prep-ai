@@ -4,6 +4,7 @@ import Input from '../../components/Inputs/Input';
 import SpinnerLoader from '../../components/Loader/SpinnerLoader';
 import axiosInstance from '../../utils/axiosInstance';
 import { API_PATHS } from '../../utils/apiPaths';
+import toast from 'react-hot-toast';
 
 function CreateSessionForm() {
   const [formData, setFormData] = useState({
@@ -39,7 +40,6 @@ function CreateSessionForm() {
     setIsLoading(true);
 
     try {
-      console.log(role, experience, topicsToFocus);
       // Call AI API to generate questions
       const aiResponse = await axiosInstance.post(
         API_PATHS.AI.GENERATE_QUESTIONS,
@@ -59,7 +59,7 @@ function CreateSessionForm() {
         questions: generatedQuestions,
       });
       if (response.data?.session?._id) {
-        console.log(response.data);
+        toast.success('Session created successfully');
         navigate(`/interview-prep/${response.data?.session?._id}`);
       }
     } catch (err) {
@@ -90,6 +90,7 @@ function CreateSessionForm() {
           label="Target Role"
           placeholder="(e.g., Frontend Developer, UI/UX Designer, etc.)"
           type="text"
+          id="role"
         />
         <Input
           value={formData.experience}
@@ -97,6 +98,7 @@ function CreateSessionForm() {
           label="Years of Experience"
           placeholder="(e.g., 1 year, 3 years, 5+ years)"
           type="number"
+          id="experience"
         />
         <Input
           value={formData.topicsToFocus}
@@ -104,6 +106,7 @@ function CreateSessionForm() {
           label="Topics to Focus On"
           placeholder="(Comma-separated, e.g., React, Node.js, MongoDB)"
           type="text"
+          id="topics"
         />
         <Input
           value={formData.description}
@@ -111,6 +114,7 @@ function CreateSessionForm() {
           label="Description"
           placeholder="(Any specific goals or notes for this session)"
           type="text"
+          id="decription"
         />
 
         {error && <p className="text-red-500 text-xs pb-2.5">{error}</p>}

@@ -57,7 +57,7 @@ function ProfilePhotoSelector({ image, setImage, preview, setPreview }) {
       ) : (
         <div className="relative">
           <img
-            src={preview || previewUrl}
+            src={previewUrl || preview}
             className="w-20 h-20 rounded-full object-cover"
             alt="profile photo"
           />

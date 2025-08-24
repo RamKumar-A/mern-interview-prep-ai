@@ -10,6 +10,7 @@ function generateToken(userId) {
 async function registerUser(req, res) {
   try {
     const { name, email, password } = req.body;
+
     // Check if user already exists
     const userExists = await User.findOne({ email });
     if (userExists) {
@@ -52,14 +53,16 @@ async function registerUser(req, res) {
 async function loginUser(req, res) {
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(500).json({ message: 'Invalid email or password' });
+
+    if (!email || !password) {
+      return res
+        .status(400)
+        .json({ message: 'Please enter your email and password' });
     }
 
-    // Compare password
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
+    const user = await User.findOne({ email }).select('+password');
+
+    if (!user || !(await user.correctPassword(password, user.password))) {
       return res.status(500).json({ message: 'Invalid email or password' });
     }
 
@@ -75,17 +78,44 @@ async function loginUser(req, res) {
   }
 }
 
-// access - private
-async function getUserProfile(req, res) {
+async function updatePassword(req, res, next) {
   try {
-    const user = await User.findById(req.user.id).select('-password');
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+    const user = await User.findById(req.user.id).select('+password');
+    if (
+      !(await user.correctPassword(req.body.passwordCurrent, user.password))
+    ) {
+      return res.status(401).json({
+        message: 'Your current password is wrong',
+      });
     }
-    res.status(200).json(user);
+
+    if (req.body.password !== req.body.passwordConfirm) {
+      return res.status(401).json({
+        message: 'password and password confirm must be same',
+      });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(req.body.password, salt);
+    const hashedPasswordConfirm = await bcrypt.hash(
+      req.body.passwordConfirm,
+      salt
+    );
+
+    user.password = hashedPassword;
+    user.passwordConfirm = hashedPasswordConfirm;
+
+    await user.save();
+    res.status(201).json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      profileImageUrl: user.profileImageUrl,
+      token: generateToken(user._id),
+    });
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 }
 
-export { registerUser, loginUser, getUserProfile };
+export { registerUser, loginUser, updatePassword };

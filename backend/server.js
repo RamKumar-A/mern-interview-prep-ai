@@ -9,6 +9,7 @@ import { connectDB } from './config/db.js';
 import authRoutes from './routes/authRoutes.js';
 import sessionRoutes from './routes/sessionRoutes.js';
 import questionRoutes from './routes/questionRoutes.js';
+import userRoutes from './routes/userRoutes.js';
 import { protect } from './middlewares/authMiddleware.js';
 import {
   generateConceptExplanation,
@@ -37,6 +38,7 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/sessions', sessionRoutes);
 app.use('/api/questions', questionRoutes);
+app.use('/api/user', userRoutes);
 
 app.use('/api/ai/generate-questions', protect, generateInterviewQuestions);
 app.use('/api/ai/generate-explanation', protect, generateConceptExplanation);

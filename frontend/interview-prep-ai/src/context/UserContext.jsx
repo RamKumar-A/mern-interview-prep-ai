@@ -2,7 +2,7 @@ import { createContext, useEffect, useState } from 'react';
 import axiosInstance from '../utils/axiosInstance';
 import { API_PATHS } from '../utils/apiPaths';
 
-export const UserContext = createContext();
+const UserContext = createContext();
 
 function UserProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -17,7 +17,7 @@ function UserProvider({ children }) {
     }
     async function fetchUser() {
       try {
-        const response = await axiosInstance.get(API_PATHS.AUTH.GET_PROFILE);
+        const response = await axiosInstance.get(API_PATHS.USER.GET_PROFILE);
         setUser(response.data);
       } catch (err) {
         console.error('User note authenticated', err);
@@ -53,4 +53,5 @@ function UserProvider({ children }) {
   );
 }
 
+export { UserContext };
 export default UserProvider;

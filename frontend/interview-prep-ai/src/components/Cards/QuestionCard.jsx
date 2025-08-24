@@ -8,6 +8,8 @@ function QuestionCard({
   onLearnMore,
   isPinned,
   onTogglePin,
+  isPinLoading,
+  isLearnMoreLoading,
 }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [height, setHeight] = useState(0);
@@ -48,24 +50,27 @@ function QuestionCard({
               }`}
             >
               <button
-                className="flex items-center gap-2 text-xs text-indigo-800 font-medium bg-indigo-50 px-1 sm:px-3 py-1 rounded text-nowrap border border-indigo-50 hover:border-indigo-200 cursor-pointer"
+                className={`flex items-center gap-2 text-xs md:text-[12px]  font-medium  px-1 sm:px-3 py-1 md:py-[1px] rounded text-nowrap  text-orange-700 bg-orange-100 border border-orange-200 hover:border-orange-400 cursor-pointer ${
+                  isPinLoading && 'opacity-65'
+                }`}
                 onClick={onTogglePin}
+                disabled={isPinLoading}
               >
-                {isPinned ? (
-                  <LuPinOff className="text-xs" />
-                ) : (
-                  <LuPin className="text-xs" />
-                )}
+                {isPinned ? <LuPinOff className="" /> : <LuPin className="" />}
               </button>
               <button
-                className="flex items-center gap-2 text-xs text-cyan-800 font-medium bg-cyan-50 px-1 sm:px-3 py-1 rounded text-nowrap border border-cyan-50 hover:border-cyan-200 cursor-pointer"
+                className={`flex items-center gap-2 text-xs md:text-[11px] text-orange-700 font-medium bg-orange-100 px-1 sm:px-3 py-1 rounded text-nowrap border border-orange-200 hover:border-orange-400 cursor-pointer md:py-[1px] ${
+                  isLearnMoreLoading && 'opacity-65'
+                }`}
                 onClick={() => {
                   setIsExpanded(true);
                   onLearnMore();
                 }}
               >
-                <LuSparkles />
-                <span className="hidden md:block">Learn More</span>
+                <LuSparkles className="" />
+                <span className="hidden md:block">
+                  {isLearnMoreLoading ? 'Loading' : 'Learn More'}
+                </span>
               </button>
             </div>
             <button

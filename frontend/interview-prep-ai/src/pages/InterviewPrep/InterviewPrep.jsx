@@ -25,6 +25,8 @@ function InterviewPrep() {
   const [isLoading, setIsLoading] = useState(false);
   const [isUpdateLoader, setIsUpdateLoader] = useState(false);
 
+  const [isPinLoading, setIsPinLoading] = useState(false);
+
   // Fetch session data by session id
   async function fetchSessionDetailsById() {
     try {
@@ -70,10 +72,10 @@ function InterviewPrep() {
   // Pin Question
   async function toggleQuestionPinStatus(questionId) {
     try {
+      setIsPinLoading(true);
       const response = await axiosInstance.post(
         API_PATHS.QUESTION.PIN(questionId)
       );
-      console.log(response);
 
       if (response.data && response.data.question) {
         toast.success('Question Pinned Successfully');
@@ -81,6 +83,8 @@ function InterviewPrep() {
       }
     } catch (err) {
       console.error(err);
+    } finally {
+      setIsPinLoading(false);
     }
   }
 
@@ -182,6 +186,8 @@ function InterviewPrep() {
                         }
                         isPinned={data?.isPinned}
                         onTogglePin={() => toggleQuestionPinStatus(data._id)}
+                        isPinLoading={isPinLoading}
+                        isLearnMoreLoading={isLoading}
                       />
 
                       {!isLoading &&
